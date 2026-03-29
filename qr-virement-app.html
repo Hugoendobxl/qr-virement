@@ -1071,9 +1071,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cfg.iban) {
       // Already configured — keep collapsed
     } else {
-      toggleBank(); // open on first use
+      // open on first use
+      bankOpen = true;
+      document.getElementById('bankBody').classList.add('open');
+      document.getElementById('bankArrow').classList.add('open');
     }
-  } catch(e) { toggleBank(); }
+  } catch(e) {
+      bankOpen = true;
+      document.getElementById('bankBody').classList.add('open');
+      document.getElementById('bankArrow').classList.add('open');
+  }
 });
 </script>
 
