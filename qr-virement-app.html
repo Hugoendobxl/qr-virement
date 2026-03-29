@@ -549,93 +549,7 @@
 </head>
 <body>
 
-<!-- PIN Lock Screen -->
-<div id="pin-screen">
-  <div class="pin-logo">
-    <div class="pin-logo-dots">
-      <div class="pin-logo-dot"></div>
-      <div class="pin-logo-dot"></div>
-    </div>
-    <h1>Endodontie Louise</h1>
-    <h2>QR Virement</h2>
-  </div>
-  <div class="pin-label">Entrez votre code</div>
-  <div class="pin-dots" id="pinDots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
-  </div>
-  <div class="pin-keypad">
-    <button class="pin-key" onclick="pinPress('1')">1</button>
-    <button class="pin-key" onclick="pinPress('2')">2</button>
-    <button class="pin-key" onclick="pinPress('3')">3</button>
-    <button class="pin-key" onclick="pinPress('4')">4</button>
-    <button class="pin-key" onclick="pinPress('5')">5</button>
-    <button class="pin-key" onclick="pinPress('6')">6</button>
-    <button class="pin-key" onclick="pinPress('7')">7</button>
-    <button class="pin-key" onclick="pinPress('8')">8</button>
-    <button class="pin-key" onclick="pinPress('9')">9</button>
-    <button class="pin-key pin-zero" onclick="pinPress('0')">0</button>
-    <button class="pin-key pin-del" onclick="pinDel()">⌫</button>
-  </div>
-  <div class="pin-error-msg" id="pinError">Code incorrect</div>
-</div>
 
-<!-- Install banner (iOS) -->
-<div id="install-banner">
-  <div class="banner-icon">⬡</div>
-  <div class="banner-text">
-    <strong>Installer l'app</strong>
-    <div class="banner-steps">
-      <span class="step-pill">Partage</span>
-      <span class="step-arrow">›</span>
-      <span class="step-pill">Sur l'écran d'accueil</span>
-    </div>
-  </div>
-  <button class="banner-close" onclick="dismissBanner()">✕</button>
-</div>
-
-<!-- Offline badge -->
-<div id="offline-badge">⚡ Hors ligne</div>
-
-<div class="header">
-  <div class="logo-line">
-    <div class="logo-dot"></div>
-    <h1>Endodontie Louise</h1>
-    <div class="logo-dot"></div>
-  </div>
-  <h2>QR Virement SEPA</h2>
-  <p>Toutes banques belges compatibles</p>
-</div>
-
-<div class="container">
-
-  <!-- Coordonnées bancaires (collapsible) -->
-  <div class="card">
-    <div class="card-title toggle-header" onclick="toggleBank()">
-      Coordonnées bancaires
-      <span class="toggle-arrow" id="bankArrow">▾</span>
-    </div>
-    <div class="toggle-body" id="bankBody">
-      <div class="field">
-        <label>Bénéficiaire</label>
-        <input type="text" id="beneficiary" placeholder="Cabinet Endodontie Louise"
-               value="Cabinet Endodontie Louise" autocomplete="organization">
-      </div>
-      <div class="two-col">
-        <div class="field">
-          <label>IBAN</label>
-          <input type="text" id="iban" placeholder="BE00 0000 0000 0000"
-                 maxlength="32" autocomplete="off" inputmode="text">
-        </div>
-        <div class="field">
-          <label>BIC</label>
-          <input type="text" id="bic" placeholder="GEBABEBB"
-                 maxlength="11" autocomplete="off" inputmode="text">
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Paiement -->
@@ -707,43 +621,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-/* ─────────────────────────────────────────────
-   PIN LOCK
-───────────────────────────────────────────── */
-const CORRECT_PIN = '2106';
-let pinEntry = '';
-
-function pinPress(digit) {
-  if (pinEntry.length >= 4) return;
-  pinEntry += digit;
-  updatePinDots();
-  if (pinEntry.length === 4) {
-    setTimeout(checkPin, 120);
-  }
 }
 
-function pinDel() {
-  if (pinEntry.length === 0) return;
-  pinEntry = pinEntry.slice(0, -1);
-  updatePinDots();
-}
-
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('d' + i);
-    dot.classList.toggle('filled', i < pinEntry.length);
-    dot.classList.remove('error');
-  }
-}
-
-function checkPin() {
-  if (pinEntry === CORRECT_PIN) {
-    // Unlock
-    const screen = document.getElementById('pin-screen');
-    screen.style.opacity = '0';
-    screen.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => screen.classList.add('hidden'), 300);
-    try { sessionStorage.setItem('pin_unlocked', '1'); } catch(e) {}
+catch(e) {}
   } else {
     // Wrong PIN
     for (let i = 0; i < 4; i++) {
@@ -756,18 +636,13 @@ function checkPin() {
     setTimeout(() => {
       dots.classList.remove('shake');
       err.classList.remove('visible');
-      pinEntry = '';
+
       updatePinDots();
     }, 800);
   }
 }
 
-function checkPinSession() {
-  try {
-    if (sessionStorage.getItem('pin_unlocked') === '1') {
-      document.getElementById('pin-screen').classList.add('hidden');
-    }
-  } catch(e) {}
+} catch(e) {}
 }
 
 /* ─────────────────────────────────────────────
