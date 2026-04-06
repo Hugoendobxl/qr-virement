@@ -396,140 +396,7 @@
   }
   #offline-badge.visible { display: block; }
 
-  /* ─── PIN Lock Screen ─── */
-  #pin-screen { display: none !important; } #pin-screen-DISABLED {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    background: var(--navy);
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(26,58,143,0.3) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(201,168,76,0.08) 0%, transparent 50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: max(40px, calc(var(--safe-top) + 20px)) 32px max(40px, calc(var(--safe-bottom) + 20px));
-    gap: 0;
-  }
-  #pin-screen.hidden { display: none; }
-
-  .pin-logo {
-    display: flex; flex-direction: column; align-items: center;
-    margin-bottom: 48px;
-  }
-  .pin-logo-dots {
-    display: flex; gap: 8px; margin-bottom: 12px;
-  }
-  .pin-logo-dot {
-    width: 7px; height: 7px;
-    background: var(--gold); border-radius: 50%;
-    box-shadow: 0 0 10px var(--gold);
-  }
-  .pin-logo h1 {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 6px;
-  }
-  .pin-logo h2 {
-    font-family: 'Lora', Georgia, serif;
-    font-size: 22px; font-weight: 400; color: var(--text);
-  }
-
-  .pin-label {
-    font-size: 13px; color: var(--muted);
-    letter-spacing: 0.08em; margin-bottom: 28px;
-    font-family: 'Lora', Georgia, serif; font-style: italic;
-  }
-
-  /* PIN dots indicator */
-  .pin-dots {
-    display: flex; gap: 16px; margin-bottom: 44px;
-  }
-  .pin-dot {
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 2px solid rgba(201,168,76,0.4);
-    background: transparent;
-    transition: all 0.15s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .pin-dot.filled {
-    background: var(--gold);
-    border-color: var(--gold);
-    box-shadow: 0 0 12px rgba(201,168,76,0.6);
-    transform: scale(1.15);
-  }
-  .pin-dot.error {
-    background: #ef4444;
-    border-color: #ef4444;
-    box-shadow: 0 0 12px rgba(239,68,68,0.6);
-  }
-
-  /* Shake animation */
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    15%      { transform: translateX(-10px); }
-    30%      { transform: translateX(10px); }
-    45%      { transform: translateX(-8px); }
-    60%      { transform: translateX(8px); }
-    75%      { transform: translateX(-4px); }
-    90%      { transform: translateX(4px); }
-  }
-  .pin-dots.shake { animation: shake 0.5s ease; }
-
-  /* Keypad */
-  .pin-keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    width: 100%;
-    max-width: 280px;
-  }
-  .pin-key {
-    aspect-ratio: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.1s;
-    -webkit-appearance: none;
-    position: relative; overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  .pin-key:active, .pin-key.pressed {
-    background: var(--surface2);
-    transform: scale(0.92);
-    box-shadow: none;
-  }
-  .pin-key.pin-zero { grid-column: 2; }
-  .pin-key.pin-del {
-    background: transparent;
-    border-color: transparent;
-    font-size: 20px;
-    color: var(--muted);
-    box-shadow: none;
-    grid-column: 3;
-  }
-  .pin-key.pin-del:active { color: var(--text); transform: scale(0.9); }
-
-  .pin-error-msg {
-    margin-top: 24px;
-    font-size: 12px; color: #ef4444;
-    font-weight: 600; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0; transition: opacity 0.2s;
-    height: 16px;
-  }
-  .pin-error-msg.visible { opacity: 1; }
-
-  /* ─── Print ─── */
+    /* ─── Print ─── */
   @media print {
     body { background: white; padding: 20px; }
     #install-banner, .header, .card:not(.qr-result), .btn-generate,
@@ -548,39 +415,6 @@
 </style>
 </head>
 <body>
-
-<!-- PIN Lock Screen -->
-<div id="pin-screen">
-  <div class="pin-logo">
-    <div class="pin-logo-dots">
-      <div class="pin-logo-dot"></div>
-      <div class="pin-logo-dot"></div>
-    </div>
-    <h1>Endodontie Louise</h1>
-    <h2>QR Virement</h2>
-  </div>
-  <div class="pin-label">Entrez votre code</div>
-  <div class="pin-dots" id="pinDots">
-    <div class="pin-dot" id="d0"></div>
-    <div class="pin-dot" id="d1"></div>
-    <div class="pin-dot" id="d2"></div>
-    <div class="pin-dot" id="d3"></div>
-  </div>
-  <div class="pin-keypad">
-    <button class="pin-key" onclick="pinPress('1')">1</button>
-    <button class="pin-key" onclick="pinPress('2')">2</button>
-    <button class="pin-key" onclick="pinPress('3')">3</button>
-    <button class="pin-key" onclick="pinPress('4')">4</button>
-    <button class="pin-key" onclick="pinPress('5')">5</button>
-    <button class="pin-key" onclick="pinPress('6')">6</button>
-    <button class="pin-key" onclick="pinPress('7')">7</button>
-    <button class="pin-key" onclick="pinPress('8')">8</button>
-    <button class="pin-key" onclick="pinPress('9')">9</button>
-    <button class="pin-key pin-zero" onclick="pinPress('0')">0</button>
-    <button class="pin-key pin-del" onclick="pinDel()">⌫</button>
-  </div>
-  <div class="pin-error-msg" id="pinError">Code incorrect</div>
-</div>
 
 <!-- Install banner (iOS) -->
 <div id="install-banner">
@@ -707,69 +541,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-/* ─────────────────────────────────────────────
-   PIN LOCK
-───────────────────────────────────────────── */
-const CORRECT_PIN = '2106';
-let pinEntry = '';
-
-function pinPress(digit) {
-  if (pinEntry.length >= 4) return;
-  pinEntry += digit;
-  updatePinDots();
-  if (pinEntry.length === 4) {
-    setTimeout(checkPin, 120);
-  }
-}
-
-function pinDel() {
-  if (pinEntry.length === 0) return;
-  pinEntry = pinEntry.slice(0, -1);
-  updatePinDots();
-}
-
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('d' + i);
-    dot.classList.toggle('filled', i < pinEntry.length);
-    dot.classList.remove('error');
-  }
-}
-
-function checkPin() {
-  if (pinEntry === CORRECT_PIN) {
-    // Unlock
-    const screen = document.getElementById('pin-screen');
-    screen.style.opacity = '0';
-    screen.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => screen.classList.add('hidden'), 300);
-    try { sessionStorage.setItem('pin_unlocked', '1'); } catch(e) {}
-  } else {
-    // Wrong PIN
-    for (let i = 0; i < 4; i++) {
-      document.getElementById('d' + i).classList.add('error');
-    }
-    const dots = document.getElementById('pinDots');
-    dots.classList.add('shake');
-    const err = document.getElementById('pinError');
-    err.classList.add('visible');
-    setTimeout(() => {
-      dots.classList.remove('shake');
-      err.classList.remove('visible');
-      pinEntry = '';
-      updatePinDots();
-    }, 800);
-  }
-}
-
-function checkPinSession() {
-  try {
-    if (sessionStorage.getItem('pin_unlocked') === '1') {
-      document.getElementById('pin-screen').classList.add('hidden');
-    }
-  } catch(e) {}
-}
-
 /* ─────────────────────────────────────────────
    STORAGE — persist bank config locally
 ───────────────────────────────────────────── */
@@ -1123,7 +894,6 @@ window.addEventListener('offline', updateOnlineStatus);
    INIT
 ───────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  checkPinSession();
   loadConfig();
   generateAppIcon();
   registerServiceWorker();
