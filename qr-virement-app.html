@@ -177,13 +177,6 @@
     color: var(--blue); pointer-events: none;
   }
 
-  /* ─── Toggle section ─── */
-  .toggle-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
-  .toggle-arrow { font-size: 12px; color: var(--text-t); transition: transform 0.25s; }
-  .toggle-arrow.open { transform: rotate(180deg); }
-  .toggle-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, margin-top 0.3s ease; }
-  .toggle-body.open { max-height: 300px; margin-top: 16px; }
-
   /* ─── Generate button ─── */
   .btn-generate {
     width: 100%; padding: 14px;
@@ -345,38 +338,10 @@
 
 <div class="container">
 
-  <!-- Coordonnées bancaires (collapsible) -->
-  <div class="card">
-    <div class="card-title toggle-header" onclick="toggleBank()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
-      Coordonnées bancaires
-      <span class="toggle-arrow" id="bankArrow">▾</span>
-    </div>
-    <div class="toggle-body" id="bankBody">
-      <div class="field">
-        <label>Bénéficiaire</label>
-        <input type="text" id="beneficiary" placeholder="Cabinet Endodontie Louise"
-               value="Cabinet Endodontie Louise" autocomplete="organization">
-      </div>
-      <div class="two-col">
-        <div class="field">
-          <label>IBAN</label>
-          <input type="text" id="iban" placeholder="BE00 0000 0000 0000"
-                 maxlength="32" autocomplete="off" inputmode="text">
-        </div>
-        <div class="field">
-          <label>BIC</label>
-          <input type="text" id="bic" placeholder="GEBABEBB"
-                 maxlength="11" autocomplete="off" inputmode="text">
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Paiement -->
   <div class="card">
     <div class="card-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M4 14h12M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12a7.9 7.9 0 0 0 7.8 8 7.7 7.7 0 0 0 5.2-2"/></svg>
       Paiement patient
     </div>
     <div class="two-col">
@@ -446,39 +411,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-/* ─── STORAGE ─── */
-const STORAGE_KEY = 'endo_bank_config';
-
-function saveConfig() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      beneficiary: document.getElementById('beneficiary').value,
-      iban: document.getElementById('iban').value,
-      bic: document.getElementById('bic').value,
-    }));
-  } catch(e) {}
-}
-
-function loadConfig() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (cfg.beneficiary) document.getElementById('beneficiary').value = cfg.beneficiary;
-    if (cfg.iban)        document.getElementById('iban').value        = cfg.iban;
-    if (cfg.bic)         document.getElementById('bic').value         = cfg.bic;
-  } catch(e) {}
-}
-
-/* ─── BANK TOGGLE ─── */
-let bankOpen = false;
-function toggleBank() {
-  bankOpen = !bankOpen;
-  document.getElementById('bankBody').classList.toggle('open', bankOpen);
-  document.getElementById('bankArrow').classList.toggle('open', bankOpen);
-}
-
-/* ─── IBAN ─── */
-function formatIBAN(raw) { return raw.replace(/\s/g,'').toUpperCase(); }
-function validateIBAN(iban) { return /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,}$/.test(iban); }
+/* ─── BANK CONFIG ─── */
+const BANK = {
+  beneficiary: 'Endodontie Louise SC',
+  iban: 'BE14068930419983',
+  bic: 'GKCCBEBB'
+};
 
 /* ─── QR GENERATION ─── */
 let currentCanvas = null;
@@ -494,18 +432,10 @@ function clearError() {
 
 function generateQR() {
   clearError();
-  saveConfig();
 
-  const beneficiary = document.getElementById('beneficiary').value.trim();
-  const ibanRaw     = document.getElementById('iban').value.trim();
-  const bic         = document.getElementById('bic').value.trim().toUpperCase();
+  const { beneficiary, iban, bic } = BANK;
   const amountStr   = document.getElementById('amount').value.trim();
   const comm        = document.getElementById('communication').value.trim();
-
-  if (!beneficiary) return showError('Renseignez le nom du bénéficiaire (section coordonnées).');
-  if (!ibanRaw)     return showError('Renseignez l\'IBAN (section coordonnées).');
-  const iban = formatIBAN(ibanRaw);
-  if (!validateIBAN(iban)) return showError('Format IBAN invalide.');
   if (!amountStr || parseFloat(amountStr) <= 0) return showError('Montant invalide.');
 
   const amount = parseFloat(amountStr).toFixed(2);
@@ -725,28 +655,17 @@ window.addEventListener('offline', updateOnlineStatus);
 
 /* ─── INIT ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  loadConfig();
   generateAppIcon();
   registerServiceWorker();
   checkInstallBanner();
   updateOnlineStatus();
 
-  document.getElementById('iban').addEventListener('blur', function() {
-    const clean = this.value.replace(/\s/g,'').toUpperCase();
-    this.value = clean.replace(/(.{4})/g,'$1 ').trim();
-  });
-
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.target.closest('#bankBody')) generateQR();
+    if (e.key === 'Enter') generateQR();
   });
-
-  try {
-    const cfg = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    if (!cfg.iban) toggleBank();
-  } catch(e) { toggleBank(); }
 });
 </script>
-<a href="https://endodontie-launcher.vercel.app" style="position:fixed;bottom:20px;right:20px;z-index:9999;width:48px;height:48px;border-radius:50%;background:#1558A0;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .2s;box-shadow:0 4px 16px rgba(21,88,160,0.3);color:#fff" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+<a href="https://endodontie-launcher-v2.vercel.app" style="position:fixed;bottom:20px;right:20px;z-index:9999;width:48px;height:48px;border-radius:50%;background:#1558A0;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .2s;box-shadow:0 4px 16px rgba(21,88,160,0.3);color:#fff" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 </a>
 </body>
